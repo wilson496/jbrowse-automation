@@ -1,0 +1,11 @@
+jbrowse.yml - ansible playbook to automate the setup of JBrowse, which uses Apache (also includes its installation as well)
+
+config.sh - compiles JBrowse dependencies (to be removed)
+
+unbox.sh - runs both jbrowse.yml and config.sh (will be removed in future versions)  
+
+
+Steps: 
+
+1. Run unbox.sh
+2. Wait til complete
