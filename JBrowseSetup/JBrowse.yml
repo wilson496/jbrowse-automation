@@ -1,0 +1,55 @@
+- hosts: localhost
+  vars: 
+    http_port: 80
+    max_clients: 200
+  tasks:
+ 
+  - name: Ensure apache is the latest version
+    become: yes
+    become_user: root
+    apt: name=apache2 state=latest
+
+#Do this, but don't wait too long 
+  - name: Install make, a C compiler, and perl dependencies
+    become: yes
+    become_user: root
+    apt: name={{item}} state=installed
+    with_items:
+    - libpng-dev
+    - libgd2-noxpm-dev
+    - build-essential
+    - libncurses5-dev 
+    - bioperl
+    #async: 60
+
+
+  #Note: Change this line to acquire a new version. Latest version as of July 5th, 2016 is JBrowse-1.12.1
+
+
+  - name: Unzip JBrowse
+    unarchive: src=http://jbrowse.org/releases/JBrowse-1.12.1-dev.zip dest=/var/www copy=no
+     
+  - name: Install Bio-Samtools  
+    unarchive: src=http://search.cpan.org/CPAN/authors/id/L/LD/LDS/Bio-SamTools-1.43.tar.gz dest=/var/www copy=no
+        
+  - name: Install Module Build
+    unarchive: src=http://search.cpan.org/CPAN/authors/id/L/LE/LEONT/Module-Build-0.4210.tar.gz dest=/var/www copy=no
+
+  - name: Build Bio-Samtools and Module Build, and setup JBrowse
+    #become: yes
+    #become_user: root
+    script: ./config.sh
+      
+  - name: Ensure apache is running
+    become: yes
+    become_user: root 
+    service: 
+      name: apache2
+      state: started
+
+  handlers:
+     - name: restart apache
+       service:
+         name: apache2
+         state: restarted
+  
